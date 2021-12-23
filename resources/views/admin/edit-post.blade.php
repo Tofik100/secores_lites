@@ -54,69 +54,69 @@
                 {{-- @livewire('admin.topbar') --}}
                 @include('layouts.topbar')
                 <!--end::Topbar-->
-                <div class="container">
 
-                    <h2>Permission List</h2>
-
-                    <div class="col-md-5 mx-2 ">
-                        @if (session()->has('permission'))
-                            <div class="alert alert-success">
-                                <h4 class="text-sm text-center">{{ session('permission') }}</h4>
-                            </div>
-                        @endif
-                        <form action="{{ route('dashboard') }}" method="POST">
-                            @csrf
-                            <div class="row">
-                                <input type="text" name="addPermission" class="form-control my-2"
-                                    placeholder="Add Permission">
-                                @if ($errors->has('addPermission'))
-                                    <span class="text-danger">{{ $errors->first('addPermission') }}</span>
-                                @endif
-                                <input type="text" name="guardName" class="form-control" placeholder="Gard Name">
-                                @if ($errors->has('guardName'))
-                                    <span class="text-danger">{{ $errors->first('guardName') }}</span>
-                                @endif
-                                <button type="submit" class="btn btn-info my-2">Add Permission</button>
-                            </div>
-                        </form>
-                    </div>
-
-
+                <div class="container mt-5">
                     <div class="row">
-                        <div class="col-md-12">
-                            @if (session()->has('delete'))
-                                <div class="alert alert-success">
-                                    <h4 class="text-sm text-center">{{ session('delete') }}</h4>
-                                </div>
-                            @endif
-                            <table class="table table-striped table-dark">
-                                <thead>
-                                    <tr>
-                                        <th scope="col  mx-2">S.No</th>
-                                        <th scope="col mx-2">Role Name</th>
-                                        <th scope="col mx-2" colspan="2">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{ $i = 1 }}
-                                    @foreach (Spatie\Permission\Models\Permission::all() as $permission)
-                                        
-                                        <tr>
-                                            <th>{{ $i++ }}</th>
-                                            <th>{{ $permission->name }}</th>
-                                            <th><a href="{{ route('edit', $permission->id) }}">
-                                                    <button class="btn btn-info">Edit</button></a>
-                                            </th>
-                                            <th><a href="{{ route('delete', $permission->id) }}">
-                                                    <button class="btn btn-danger">Delete</button></a>
-                                            </th>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="col-xl-12 text-right">
+                            <a href="{{ route('dashboard') }}" class="btn btn-danger"> Back </a>
                         </div>
                     </div>
+
+                    <form action="{{ route('updatePost',$editPost->id) }}" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-xl-10 col-lg-10 col-sm-12 col-12 m-auto">
+
+                                @if (Session::has('updated'))
+                                    <div class="alert alert-success alert-dismissible">
+                                        <h5>{{ Session::get('updated') }}</h5>
+                                    </div>
+                                @endif
+
+                                <div class="card shadow">
+
+                                    <div class="card-header">
+                                        <h4 class="card-title"> Update Post </h4>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label> Title </label>
+                                            <input type="text" class="form-control" name="title"
+                                                placeholder="Enter the Title" value="{{ $editPost->title }}">
+                                            @if ($errors->has('title'))
+                                                <span class="text-danger">{{ $errors->first('title') }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="form-group">
+                                            <label> Description </label>
+                                            <textarea class="form-control" id="description"
+                                                placeholder="Enter the Description" name="description" value="">{{ $editPost->description }}</textarea>
+                                            @if ($errors->has('description'))
+                                                <span
+                                                    class="text-danger">{{ $errors->first('description') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-success">Update Post </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+
+                <script>
+                    ClassicEditor
+                        .create(document.querySelector('#description'))
+                        .catch(error => {
+                            console.error(error);
+                        });
+                </script>
+
+
             </div>
             <!--end::Page-->
         </div>

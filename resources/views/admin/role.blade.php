@@ -65,11 +65,11 @@
                         @endif
 
                         @if (session()->has('roleDelete'))
-                        <div class="alert alert-success">
-                            <h4 class="text-sm text-center">{{ session('roleDelete') }}</h4>
-                        </div>
-                    @endif
-                        <form action="{{ route('dashboard') }}" method="POST">
+                            <div class="alert alert-success">
+                                <h4 class="text-sm text-center">{{ session('roleDelete') }}</h4>
+                            </div>
+                        @endif
+                        <form action="{{ route('add.role') }}" method="POST">
                             @csrf
                             <div class="row">
                                 <input type="text" name="addRole" class="form-control my-2" placeholder="Add Role">
@@ -80,11 +80,37 @@
                                 @if ($errors->has('guardName'))
                                     <span class="text-danger">{{ $errors->first('guardName') }}</span>
                                 @endif
+
+
+                                @foreach (Spatie\Permission\Models\Permission::all() as $permission)
+                                    <div class="mt-3">
+                                        <th class="">
+
+                                            <input class="form-check-input " type="checkbox" name="permission[]"
+                                                value="{{ $permission->id }}"
+                                                {{ old('agreement') == 'on' ? 'checked' : '' }}>
+                                            {{ $permission->name }}
+                                        </th>
+                                    </div>
+                                @endforeach
+
+
                                 <button type="submit" class="btn btn-info my-2">Add Role</button>
                             </div>
                         </form>
                     </div>
 
+                    @if (session()->has('roleAssign'))
+                        <div class="alert alert-success">
+                            <h4 class="text-sm text-center">{{ session('roleAssign') }}</h4>
+                        </div>
+                    @endif
+
+                    @if (session()->has('roleUncheck'))
+                        <div class="alert alert-success">
+                            <h4 class="text-sm text-center">{{ session('roleUncheck') }}</h4>
+                        </div>
+                    @endif
 
                     <div class="row">
                         <div class="col-md-12">
@@ -93,21 +119,45 @@
                                     <tr>
                                         <th scope="col  mx-2">S.No</th>
                                         <th scope="col mx-2">Role Name</th>
-                                        <th scope="col mx-2" colspan="2">Action</th>
+                                        <th scope="col mx-2" class="text-center" colspan="5">Permission Name</th>
+                                        <th scope="col mx-2" class="text-center" colspan="5">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     @foreach (Spatie\Permission\Models\Role::all() as $role)
                                         <tr>
                                             <th scope="row">{{ $role->id }}</th>
                                             <th scope="row">{{ $role->name }}</th>
-                                            <th><a href="{{ route('editRole', $role->id) }}">
-                                                <button class="btn btn-info">Edit</button></a>
-                                        </th>
-                                        <th><a href="{{ route('deleteRole', $role->id) }}">
-                                                <button class="btn btn-danger">Delete</button></a>
-                                        </th>
-                                        </tr>
+                                            <th scope="row">
+                                                <form action="{{ route('assign.role', $role->id) }}" method="get">
+                                                    @csrf
+                                                    @foreach (Spatie\Permission\Models\Permission::all() as $permission)
+                                            <th>
+                                                <input type="hidden" name="acco[]" value="{{$permission->id}}"/>
+                                                <input type="checkbox" data-on="Yes" name="permission[]"
+                                                    class="form-check-input" type="checkbox"
+                                                    value="{{ $permission->id }}"
+                                                    {{ $role->hasPermissionTo($permission->id) == true ? 'checked' : '' }}>
+                                                {{ $permission->name }}
+                                            </th>
+                                    @endforeach
+                                    <th>
+                                        <a href="{{ route('assign.role', $role->id) }}">
+                                            <input type="submit" id="flexCheckDefault" class="btn btn-info"
+                                                value="save">
+                                        </a>
+                                    </th>
+                                    </form>
+                                    </th>
+                                    <th><a href="{{ route('editRole', $role->id) }}">
+                                            <button class="btn btn-info">Edit</button></a>
+                                    </th>
+
+                                    <th><a href="{{ route('deleteRole', $role->id) }}">
+                                            <button class="btn btn-danger">Delete</button></a>
+                                    </th>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>

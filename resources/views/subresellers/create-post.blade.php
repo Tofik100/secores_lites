@@ -208,25 +208,22 @@
 
                     <div class="container">
                         <div class="row">
+
+                                <h2>Writer Page</h2>
+
                             @if (session()->has('delete'))
                                 <div class="alert alert-danger">
                                     <h4 class="text-sm text-center">{{ session('delete') }}</h4>
                                 </div>
                             @endif
                             <div class="col-md-10 ">
+                                    
 
-
-                                @can('edit post')
+                                @hasanyrole('admin')
                                     <button class="btn btn-success my-5">
-                                        <a href="{{ route('post')  }}">Create Post</a>
+                                        <a href="{{ route('post') }}">Create Post</a>
                                     </button>
-                                @endcan
-
-                                {{-- @role('writer')
-                                    <button class="btn btn-success my-5">
-                                        <a href="{{ route('post')  }}">View Publish Post</a>
-                                    </button>
-                                @endrole --}}
+                                @endhasanyrole
                                 <table class="table table-dark p-3">
                                     <thead>
                                         <tr class="">
@@ -244,23 +241,22 @@
                                                 <th scope="row">{{ $post->id }}</th>
                                                 <td>{{ $post->title }}</td>
                                                 <td>{{ $post->description }}</td>
-                                                @role('admin')
+                                                @hasanyrole('editor')
                                                 <th><a href="{{ route('editPost', $post->id) }}">
                                                         <button class="btn btn-info">Edit</button></a>
                                                 </th>
-                                                @endrole
-                                                @role('writer')
-                                                <th><a href="{{ route('editPostss', $post->id) }}">
-                                                    <button class="btn btn-info">Edit</button></a>
-                                                </th>
-                                                @endrole
+                                                @endhasanyrole
+
+                                                @can('edit post')
                                                 <th><a href="{{ route('deletePost', $post->id) }}">
                                                         <button class="btn btn-info">Delete</button></a>
                                                 </th>
+                                                @endcan
+                                                @hasanyrole('admin')
                                                 <th><a href="{{ route('createPost', $post->id) }}">
                                                         <button class="btn btn-info">Publish</button></a>
                                                 </th>
-                                               
+                                                @endhasanyrole
                                             </tr>
 
                                         @endforeach

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
-// use App\Models\Role;
+use DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Session;
@@ -25,16 +25,21 @@ class AdminController extends Controller
 
     public function resellser(Request $request)
     {
-        return view('resellers.reseller-dashboard');
+        
+        $role = user::find(2);
+        //$permission = Permission::all();
+            // return $user;
+        //return $role;
+        $role->givePermissionTo('write post');
+        return view('resellers.create-post');
+        // return view('resellers.reseller-dashboard');
     }
 
     //Add Resellers Dashboard 
 
     public function addResellser(Request $request)
     {
-        $user = user::find(2);
         
-        $user->assignRole('editor');
         return view('resellers.addresellers');
        
     }
@@ -43,8 +48,17 @@ class AdminController extends Controller
 
      public function subReseller(Request $request)
      {
-        
-        return view('subresellers.subresellers-dashboard');
+          return view('subresellers.create-post');
+
+        $role = user::find(3);
+        $role->assignRole('writer', 'admin');
+        // $role->assignRole('writer');
+       //return $role;
+        // //$permission = Permission::all();
+        //     // return $user;
+        // //return $role;
+        // $role->givePermissionTo(['write post','edit post']);
+       // return view('subresellers.subresellers-dashboard');
      }
 
      //Add Sub Resellers
@@ -77,6 +91,14 @@ class AdminController extends Controller
 
     public function dashboard(Request $request)
     {
+
+        //   $user = user::find(1);
+        //   $role = Role::all();
+        //   $user->assignRole($role);
+        //   return auth()->user()->getAllPermissions();
+        //  /return $role;
+        // //return $role;
+        // $role->givePermissionTo($permission);
         
              return view('admin.dashboard');
          
@@ -107,7 +129,32 @@ class AdminController extends Controller
 
     public function role()
     {
-        return view('admin.role');
+
+            $roles = Role::pluck('name');
+            $permission = Permission::pluck('id');
+            //    return $permission;
+
+            $datas = DB::table('role_has_permissions')
+            ->join("roles", "roles.id" ,"=", "role_has_permissions.role_id" )
+             ->join("permissions", "permissions.id" ,"=", "role_has_permissions.permission_id" )
+            ->get();
+
+
+        //   return $datas;
+        // foreach($roles_id as $test)
+        // {
+        //     $rolePermissions = Permission::join("role_has_permissions","role_has_permissions.permission_id","=","permissions.id")
+        //     ->where("role_has_permissions.role_id",$test)
+        //     ->get();
+        // }
+
+        //  $users = DB::('permissions')->get();
+        // return $users;
+        
+
+        //  return  $rolePermissions;
+
+        return view('admin.role',compact(['datas', 'roles']));
     }
 
     public function permission()
